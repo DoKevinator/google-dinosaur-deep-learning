@@ -303,9 +303,6 @@ def load_game():
         f = open("highscore")
         high_score = int(f.read())
         f.close()
-
-    startOver = True
-    while startOver:
     
     gamespeed = 4   # how fast the ground/cacti are moving
 
@@ -374,25 +371,21 @@ def load_game():
                 c.movement[0] = -1*gamespeed
                 if pygame.sprite.collide_mask(dino,c):
                     dino.isDead = True
-                    # if pygame.mixer.get_init() != None:
-                    #     die_sound.play()
         
         for p in pteras:
                 p.movement[0] = -1*gamespeed
                 if pygame.sprite.collide_mask(dino,p):
                     dino.isDead = True
-                    # if pygame.mixer.get_init() != None:
-                    #     die_sound.play()
         
         if len(cacti) < 2:
-                if len(cacti) == 0:
-                    last_obstacle.empty()
-                    last_obstacle.add(Cactus(gamespeed,40,40))
-                else:
-                    for l in last_obstacle:
-                        if l.rect.right < width*0.7 and random.randrange(0,50) == 10:
-                            last_obstacle.empty()
-                            last_obstacle.add(Cactus(gamespeed, 40, 40))
+            if len(cacti) == 0:
+                last_obstacle.empty()
+                last_obstacle.add(Cactus(gamespeed,40,40))
+            else:
+                for l in last_obstacle:
+                    if l.rect.right < width*0.7 and random.randrange(0,50) == 10:
+                        last_obstacle.empty()
+                        last_obstacle.add(Cactus(gamespeed, 40, 40))
 
         if len(pteras) == 0 and random.randrange(0,200) == 10 and counter > 500:
             for l in last_obstacle:
