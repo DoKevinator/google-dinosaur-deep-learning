@@ -1,5 +1,10 @@
+import random
 
-import common_tools
+from common_tools import * 
+from pygame import * 
+
+width = 600
+height = 150
 
 class Cactus(pygame.sprite.Sprite):
     def __init__(self,speed=5,sizex=-1,sizey=-1):

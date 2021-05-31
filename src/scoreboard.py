@@ -1,4 +1,8 @@
-import common_tools
+from common_tools import * 
+from pygame import * 
+
+width = 600
+height = 150
 
 class Scoreboard():
     def __init__(self,x=-1,y=-1):

@@ -1,7 +1,33 @@
 
 import os
 import neat 
-import visualize
+# import visualize
+import random
+
+import pygame
+from pygame import *
+
+from common_tools import *
+from scoreboard import *
+from dinosaur import * 
+from ground import * 
+from cloud import * 
+from ptera import *
+from cactus import * 
+
+pygame.init()
+
+background_color = (235, 235, 235)
+width = 600
+height = 150
+win = pygame.display.set_mode( (width, height) )
+clock = pygame.time.Clock()
+pygame.display.set_caption( "Google Dino Game" )
+
+high_score = 0
+
+FPS = 60
+gravity = 0.6
 
 
 # # 2-input XOR inputs and expected outputs.
@@ -54,9 +80,10 @@ import visualize
 #     p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
 #     p.run(eval_genomes, 10)
 
-dino_inputs = [ "gameSpeed", "distToNextObstable", "typeOfNextObstacle", "heightOfNextObstacle"]
-dino_outputs = [ "jump", "duck" ]
+dino_inputs = [ "gameSpeed", "yPosition", "distToNextObstable", "typeOfNextObstacle", "heightOfNextObstacle"]
+dino_outputs = [ "jump", "duck", "unduck" ]
 
+gamespeed = 4
 
 def load_ai_game(dinos):
     global high_score
@@ -66,8 +93,6 @@ def load_ai_game(dinos):
         f.close()
     
     gamespeed = 4   # how fast the ground/cacti are moving
-
-    gameOver = False
 
     cacti = pygame.sprite.Group()
     pteras = pygame.sprite.Group()
@@ -116,31 +141,29 @@ def load_ai_game(dinos):
                     f.close()
                     exit()  # close the program
 
-                # check if space or down arrow is pressed
-                if event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_SPACE:
-                        dino.jump()
-                    elif event.key == pygame.K_DOWN:
-                        dino.duck()
+                # # check if space or down arrow is pressed
+                # if event.type == pygame.KEYDOWN:
+                #     if event.key == pygame.K_SPACE:
+                #         dino.jump()
+                #     elif event.key == pygame.K_DOWN:
+                #         dino.duck()
 
-                # check for when down arrow is unpressed
-                if event.type == pygame.KEYUP:
-                    if event.key == pygame.K_DOWN:
-                        dino.unduck()
+                # # check for when down arrow is unpressed
+                # if event.type == pygame.KEYUP:
+                #     if event.key == pygame.K_DOWN:
+                #         dino.unduck()
 
         for c in cacti:
                 c.movement[0] = -1*gamespeed
-                if pygame.sprite.collide_mask(dino,c):
-                    dino.isDead = True
-                    # if pygame.mixer.get_init() != None:
-                    #     die_sound.play()
+                for d in dinos:
+                    if pygame.sprite.collide_mask(d,c):
+                        d.isDead = True
         
         for p in pteras:
                 p.movement[0] = -1*gamespeed
-                if pygame.sprite.collide_mask(dino,p):
-                    dino.isDead = True
-                    # if pygame.mixer.get_init() != None:
-                    #     die_sound.play()
+                for d in dinos:
+                    if pygame.sprite.collide_mask(d,p):
+                        d.isDead = True
         
         if len(cacti) < 2:
                 if len(cacti) == 0:
@@ -161,12 +184,13 @@ def load_ai_game(dinos):
         if len(clouds) < 5 and random.randrange(0,300) == 10:
                 Cloud(width,random.randrange(height/5,height/2))
         
-        dino.update()
+        for d in dinos:
+            d.update()
         cacti.update()
         pteras.update()
         clouds.update()
         ground.update()
-        curScore.update(dino.score)
+        # curScore.update(dino.score)
         highScore.update(high_score)
 
         if pygame.display.get_surface() != None:
@@ -179,28 +203,81 @@ def load_ai_game(dinos):
                 win.blit(HI_image,HI_rect)
             cacti.draw(win)
             pteras.draw(win)
-            dino.draw()
+            for d in dinos:
+                d.draw()
 
             pygame.display.update()
         clock.tick(FPS)
     
-        if dino.isDead:
-            gameOver = True
-            if dino.score > high_score:
-                high_score = dino.score
+        # if dino.isDead:
+        #     gameOver = True
+        #     if dino.score > high_score:
+        #         high_score = dino.score
 
         if counter%700 == 699:
             ground.speed -= 1
             gamespeed += 1
         counter = counter + 1
 
-        if gameOver:
-            load_game()
+        # if gameOver:
+        #     load_game()
 
         pygame.display.update()
+
+def dinosAreDead( dinos ):
+    for d in dinos:
+        if not d.isDead:
+            return False
+    return True
 
 def ai_plays(genomes, config):
     for genome_id, genome in genomes:
         genome.fitness = 4.0
         net = neat.nn.FeedForwardNetwork.create(genome, config)
-        for 
+
+        dinos = [Dinosaur(44,47)]*30    # create an array of 30 dinos
+        load_ai_game(dinos)
+        # while not dinosAreDead(dinos):
+
+
+def run(config_file):
+    # Load configuration.
+    config = neat.Config(neat.DefaultGenome, neat.DefaultReproduction,
+                         neat.DefaultSpeciesSet, neat.DefaultStagnation,
+                         config_file)
+
+    # Create the population, which is the top-level object for a NEAT run.
+    p = neat.Population(config)
+
+    # Add a stdout reporter to show progress in the terminal.
+    p.add_reporter(neat.StdOutReporter(True))
+    stats = neat.StatisticsReporter()
+    p.add_reporter(stats)
+    p.add_reporter(neat.Checkpointer(5))
+
+    # Run for up to 300 generations.
+    winner = p.run(ai_plays, 300)
+
+    # Display the winning genome.
+    print('\nBest genome:\n{!s}'.format(winner))
+
+    # # Show output of the most fit genome against training data.
+    # print('\nOutput:')
+    # winner_net = neat.nn.FeedForwardNetwork.create(winner, config)
+    # for xi, xo in zip(xor_inputs, xor_outputs):
+    #     output = winner_net.activate(xi)
+    #     print("input {!r}, expected output {!r}, got {!r}".format(xi, xo, output))
+
+    # node_names = {-1:'A', -2: 'B', 0:'A XOR B'}
+    # visualize.draw_net(config, winner, True, node_names=node_names)
+    # visualize.plot_stats(stats, ylog=False, view=True)
+    # visualize.plot_species(stats, view=True)
+
+    p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
+    p.run(ai_plays, 10)
+
+def main():
+    run("./config-feedforward.txt")
+
+main()
+

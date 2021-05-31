@@ -1,5 +1,6 @@
 
-import common_tools
+from common_tools import * 
+from pygame import * 
 
 class Cloud(pygame.sprite.Sprite):
     def __init__(self,x,y):

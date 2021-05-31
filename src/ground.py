@@ -1,5 +1,9 @@
 
-import common_tools
+from common_tools import * 
+from pygame import * 
+
+width = 600
+height = 150
 
 class Ground():
     def __init__(self,speed=-5):

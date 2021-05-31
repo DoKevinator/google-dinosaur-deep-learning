@@ -1,5 +1,10 @@
 
-import common_tools
+from common_tools import * 
+from pygame import * 
+
+width = 600
+height = 150
+gravity = 0.6
 
 class Dinosaur():
     def __init__(self,sizex=-1,sizey=-1):
