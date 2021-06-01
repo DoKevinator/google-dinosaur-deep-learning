@@ -203,10 +203,11 @@ class Dinosaur():
         self.counter = (self.counter + 1)
     
     def jump(self):
-        if self.isJumping == False:
-            self.isJumping = True
-            self.isBlinking = False
-            self.movement[1] = -1*self.jumpSpeed
+        if not self.isDucking:
+            if self.isJumping == False:
+                self.isJumping = True
+                self.isBlinking = False
+                self.movement[1] = -1*self.jumpSpeed
 
     def duck(self):
         self.isDucking = True
