@@ -1,0 +1,18 @@
+digraph {
+	node [fontsize=9 height=0.2 shape=circle width=0.2]
+	gameSpeed [fillcolor=lightgray shape=box style=filled]
+	yPosition [fillcolor=lightgray shape=box style=filled]
+	distToNextObstable [fillcolor=lightgray shape=box style=filled]
+	heightOfNextObstacle [fillcolor=lightgray shape=box style=filled]
+	Jump [fillcolor=lightblue style=filled]
+	Duck [fillcolor=lightblue style=filled]
+	Unduck [fillcolor=lightblue style=filled]
+	Nothing [fillcolor=lightblue style=filled]
+	heightOfNextObstacle -> Jump [color=green penwidth=0.15651046058562537 style=solid]
+	distToNextObstable -> Jump [color=red penwidth=0.2639688447488414 style=solid]
+	yPosition -> Unduck [color=red penwidth=0.39654846158466905 style=solid]
+	heightOfNextObstacle -> Unduck [color=green penwidth=0.48030603648757 style=solid]
+	gameSpeed -> Jump [color=red penwidth=0.227616975711503 style=solid]
+	heightOfNextObstacle -> Nothing [color=red penwidth=0.28390565547545094 style=solid]
+	yPosition -> Nothing [color=green penwidth=0.25694034138160415 style=solid]
+}

@@ -16,7 +16,7 @@ width = 600
 height = 150
 win = pygame.display.set_mode( (width, height) )
 clock = pygame.time.Clock()
-pygame.display.set_caption( "Google self.dino Game" )
+pygame.display.set_caption( "Google Chrome Dino Game" )
 
 high_score = 0
 
@@ -63,7 +63,7 @@ class Game():
         if len(self.last_obstacle) > 0:
             return self.last_obstacle.sprites()[0].rect.left - self.dino.rect.right
         else :
-            return 9999
+            return 999
 
     def getTypeOfNextObstacle(self):
         return 1
@@ -72,7 +72,7 @@ class Game():
         if len(self.last_obstacle) > 0:
             return self.last_obstacle.sprites()[0].rect.top
         else :
-            return 9999
+            return 0
 
     def run(self):
         if pygame.display.get_surface() == None:
@@ -93,6 +93,7 @@ class Game():
     
     def updateGame(self):
         # check if the self.dino collided with an obstacle
+        pygame.event.pump()
         for c in self.cacti:
             c.movement[0] = -1*self.gamespeed
             if pygame.sprite.collide_mask(self.dino,c):
@@ -106,19 +107,23 @@ class Game():
         # create new obstacles 
         if len(self.cacti) < 2:
             if len(self.cacti) == 0:
-                self.last_obstacle.empty()
+                #self.last_obstacle.empty()
                 self.last_obstacle.add(Cactus(self.gamespeed,40,40))
             else:
-                for l in self.last_obstacle:
-                    if l.rect.right < width*0.7 and random.randrange(0,50) == 10:
-                        self.last_obstacle.empty()
-                        self.last_obstacle.add(Cactus(self.gamespeed, 40, 40))
+                # this check is to help space out some obtacles to avoid impossible-to-dodge death traps
+                if len(self.last_obstacle) > 0 and (600-self.last_obstacle.sprites()[len(self.last_obstacle)-1].rect.right) > 37.5*self.gamespeed:
+                    for l in self.last_obstacle:
+                        if l.rect.right < width*0.7 and random.randrange(0,50) == 10:
+                            #self.last_obstacle.empty()
+                            self.last_obstacle.add(Cactus(self.gamespeed, 40, 40))
 
         if len(self.pteras) == 0 and random.randrange(0,200) == 10 and self.counter > 500:
-            for l in self.last_obstacle:
-                if l.rect.right < width*0.8:
-                    self.last_obstacle.empty()
-                    self.last_obstacle.add(Ptera(self.gamespeed, 46, 40))
+            # this check is to help space out some obtacles to avoid impossible-to-dodge death traps
+            if len(self.last_obstacle) > 0 and (600-self.last_obstacle.sprites()[len(self.last_obstacle)-1].rect.right) > 37.5*self.gamespeed:
+                for l in self.last_obstacle:
+                    if l.rect.right < width*0.8:
+                        #self.last_obstacle.empty()
+                        self.last_obstacle.add(Ptera(self.gamespeed, 46, 40))
         
         if len(self.clouds) < 5 and random.randrange(0,300) == 10:
                 Cloud(width,random.randrange(height/5,height/2))
@@ -130,6 +135,10 @@ class Game():
         self.ground.update()
         self.curScore.update(self.dino.score, background_color)
         self.highScore.update(high_score, background_color)
+		
+        if len(self.last_obstacle) > 0:
+            if self.last_obstacle.sprites()[0].rect.left - self.dino.rect.right < 0:
+                self.last_obstacle.remove(self.last_obstacle.sprites()[0])
 
         if pygame.display.get_surface() != None:
             win.fill(background_color)

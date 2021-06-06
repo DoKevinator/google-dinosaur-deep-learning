@@ -107,11 +107,11 @@ def findLargestIndex(output):
 
 def ai_plays(genomes, config):
     # dinos = [Dinosaur(44,47)]*30    # create an array of 30 dinos
-    dino = Dinosaur(44,47)
     i = 0
     for genome_id, genome in genomes:
         net = neat.nn.FeedForwardNetwork.create(genome, config)
 
+        dino = Dinosaur(44,47)
         ai_gamer = Game(dino)
         ai_gamer.run()
         while not dino.isDead:
@@ -128,7 +128,7 @@ def ai_plays(genomes, config):
             else:
                 dino.unduck() # do nothing 
 
-            pygame.time.wait(16)  # sleep for 16 milliseconds (1 frame)
+            pygame.time.wait(16)  # sleep for 16 milliseconds (1 frame, 60FPS)
             ai_gamer.updateGame()
 
         genome.fitness = dino.score
@@ -151,7 +151,7 @@ def run(config_file):
     p.add_reporter(neat.Checkpointer(5))
 
     # Run for up to 300 generations.
-    winner = p.run(ai_plays, 2)
+    winner = p.run(ai_plays, 10)
 
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
@@ -163,13 +163,13 @@ def run(config_file):
     #     output = winner_net.activate(xi)
     #     print("input {!r}, expected output {!r}, got {!r}".format(xi, xo, output))
 
-    node_names = {-1:'Jump', -2: 'Duck', -3:'Unduck', -4:"Nothing", 0:"Dino"}
+    node_names = {-1:"gameSpeed", -2:"yPosition", -3:"distToNextObstable", -4:"heightOfNextObstacle", 0:'Jump', 1: 'Duck', 2:'Unduck', 3:"Nothing"}
     visualize.draw_net(config, winner, True, node_names=node_names)
     visualize.plot_stats(stats, ylog=False, view=True)
     visualize.plot_species(stats, view=True)
 
-    p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
-    p.run(ai_plays, 1)
+    #p = neat.Checkpointer.restore_checkpoint('neat-checkpoint-4')
+    #p.run(ai_plays, 1)
 
 def main():
     run("./config-feedforward-2.txt")
