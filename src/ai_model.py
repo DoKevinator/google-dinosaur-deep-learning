@@ -128,7 +128,7 @@ def ai_plays(genomes, config):
             else:
                 dino.unduck() # do nothing 
 
-            pygame.time.wait(16)  # sleep for 16 milliseconds (1 frame)
+            pygame.time.wait(16)  # sleep for 16 milliseconds (1 frame, 60FPS)
             ai_gamer.updateGame()
 
         genome.fitness = dino.score
