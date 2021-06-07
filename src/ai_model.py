@@ -113,8 +113,8 @@ def run(config_file):
     p.add_reporter(stats)
     p.add_reporter(neat.Checkpointer(5))
 
-    # Run for up to 300 generations.
-    winner = p.run(ai_plays, 10)
+    # Run for up to 50 generations.
+    winner = p.run(ai_plays, 50)
 
     # Display the winning genome.
     print('\nBest genome:\n{!s}'.format(winner))
