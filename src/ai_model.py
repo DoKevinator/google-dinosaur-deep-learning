@@ -17,9 +17,6 @@ from game import *
 
 import pickle
 
-import os
-os.environ["PATH"] += os.pathsep + 'C:\Program Files (x86)\graphviz-0.16\graphviz-0.16\graphviz'
-
 pygame.init()
 
 background_color = (235, 235, 235)
