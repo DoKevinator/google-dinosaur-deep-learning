@@ -21,7 +21,9 @@ class Dinosaur():
         self.isDucking = False
         self.isBlinking = False
         self.movement = [0,0]
-        self.jumpSpeed = 11
+        self.jumpSpeed = 10
+
+        self.timesJumped = 0
 
         self.stand_pos_width = self.rect.width
         self.duck_pos_width = self.rect1.width
@@ -76,6 +78,7 @@ class Dinosaur():
     def jump(self):
         if not self.isDucking:
             if self.isJumping == False:
+                self.timesJumped += 1
                 self.isJumping = True
                 self.isBlinking = False
                 self.movement[1] = -1*self.jumpSpeed
